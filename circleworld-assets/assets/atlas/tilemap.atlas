@@ -1,0 +1,89 @@
+
+tilemap.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+grassCenter
+  rotate: false
+  xy: 2, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+sandCenter
+  rotate: false
+  xy: 2, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+grassMid
+  rotate: false
+  xy: 74, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+sandMid
+  rotate: false
+  xy: 146, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+snowCenter
+  rotate: false
+  xy: 218, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+snowMid
+  rotate: false
+  xy: 290, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+stoneCenter
+  rotate: false
+  xy: 362, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+stoneMid
+  rotate: false
+  xy: 434, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+sun1Center
+  rotate: false
+  xy: 506, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+sun1Mid
+  rotate: false
+  xy: 578, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+sun2Center
+  rotate: false
+  xy: 650, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+sun2Mid
+  rotate: false
+  xy: 722, 2
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1

@@ -5,7 +5,16 @@ public class AssetsUpdater {
 
 	public static void main(String[] args) {
 		
-		TexturePacker2.process("atlas", "assets/atlas", "atlas");
+		UpdateAtlas("gui");
+		UpdateAtlas("planets");
+		UpdateAtlas("player1");
+		UpdateAtlas("ships");
+		UpdateAtlas("tilemap");
+	}
+	
+	static private void UpdateAtlas(String name) {
+		
+		TexturePacker2.process("atlas/" + name, "assets/atlas", name);
 		
 	}
 }

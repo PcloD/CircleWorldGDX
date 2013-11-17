@@ -1,0 +1,47 @@
+
+ships.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Assaultboat
+  rotate: false
+  xy: 2, 2
+  size: 43, 34
+  orig: 43, 34
+  offset: 0, 0
+  index: -1
+Battleship
+  rotate: false
+  xy: 2, 85
+  size: 368, 160
+  orig: 368, 160
+  offset: 0, 0
+  index: -1
+Corvette
+  rotate: false
+  xy: 372, 86
+  size: 91, 40
+  orig: 91, 40
+  offset: 0, 0
+  index: -1
+Cruiser
+  rotate: false
+  xy: 372, 128
+  size: 299, 117
+  orig: 299, 117
+  offset: 0, 0
+  index: -1
+Destroyer
+  rotate: false
+  xy: 2, 38
+  size: 130, 45
+  orig: 130, 45
+  offset: 0, 0
+  index: -1
+Frigate
+  rotate: false
+  xy: 673, 200
+  size: 111, 45
+  orig: 111, 45
+  offset: 0, 0
+  index: -1
