@@ -82,7 +82,11 @@ public class UniverseGeneratorDefault extends UniverseGenerator
                         short minPlanetRadius = (short) (planetSafeRadius / 16);
                         short maxPlanetRadius = (short) (planetSafeRadius / 9);
 
-                        short planetRadius = (short) (random.nextInt(maxPlanetRadius - minPlanetRadius) + minPlanetRadius);
+                        short planetRadius;
+                        if (maxPlanetRadius - minPlanetRadius > 0)
+                        	planetRadius = (short) (random.nextInt(maxPlanetRadius - minPlanetRadius) + minPlanetRadius);
+                        else
+                        	planetRadius = minPlanetRadius;
 
                         PushThing(ThingType.Planet, planetAngle, planetDistance, planetRotationPeriod, planetOrbitationPeriod, Planet.GetClosestValidRadius(planetRadius), planetSafeRadius, random.nextInt());
                         PopThing();

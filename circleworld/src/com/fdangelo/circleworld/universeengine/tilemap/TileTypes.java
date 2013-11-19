@@ -3,6 +3,7 @@ package com.fdangelo.circleworld.universeengine.tilemap;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.fdangelo.circleworld.GameLogic;
 
 public class TileTypes
 {
@@ -10,6 +11,9 @@ public class TileTypes
     
     static public TileType[] GetTileTypes()
     {
+    	if (tileTypes == null)
+    		InitTileTypes();
+    	
         return tileTypes;
     }
     
@@ -20,11 +24,15 @@ public class TileTypes
     
     static private TextureAtlas atlas;
     
-    static public void InitTileTypes(AssetManager assetManager)
+    static public void InitTileTypes()
     {
+    	AssetManager assetManager = GameLogic.Instace.assetManager;
+    	
     	atlas = assetManager.get("atlas/tilemap.atlas", TextureAtlas.class);
         
         tileTypes = new TileType[256];
+        for (int i = 0 ; i < tileTypes.length; i++)
+        	tileTypes[i] = new TileType();
         
         tileTypes[1].center = GetTileSubtypeUV("grassCenter");
         tileTypes[1].top = GetTileSubtypeUV("grassMid");

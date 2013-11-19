@@ -11,6 +11,7 @@ import com.fdangelo.circleworld.universeengine.objects.Ship;
 import com.fdangelo.circleworld.universeengine.objects.UniverseObject;
 import com.fdangelo.circleworld.universeengine.tilemap.Planet;
 import com.fdangelo.circleworld.universeengine.utils.UEProfiler;
+import com.fdangelo.circleworld.utils.Mathf;
 
 public class Universe
 {
@@ -21,10 +22,10 @@ public class Universe
     //private static final float INV_TWO_PI = 1.0f / (MathUtils.PI * 2.0f); 
     private static final float DEG_TO_RAD_OVER_100 = 0.000174532925f; //(degrees to radians / 100)
         
-    private static final float POSITIONS_TIME_SCALE = 0.01f;
+    private static final float POSITIONS_TIME_SCALE = 1.0f; //0.01f;
 
-    private Thing[] things = new Thing[MAX_THINGS];
-    private ThingPosition[] thingsPositions = new ThingPosition[MAX_THINGS];
+    private Thing[] things;
+    private ThingPosition[] thingsPositions;
     private short thingsAmount;
 
     private short[] thingsToRender = new short[MAX_THINGS];
@@ -89,6 +90,17 @@ public class Universe
     public void setListener(IUniverseListener value)
     {
         listener = value;
+    }
+    
+    public Universe()
+    {
+    	things = new Thing[MAX_THINGS];
+    	for (int i = 0; i < MAX_THINGS; i++)
+    		things[i] = new Thing();
+    	
+    	thingsPositions = new ThingPosition[MAX_THINGS];
+    	for (int i = 0; i < MAX_THINGS; i++)
+    		thingsPositions[i] = new ThingPosition();
     }
     
     public void Init(int seed, IUniverseListener listener)
@@ -159,8 +171,8 @@ public class Universe
 
             angle += TWO_PI * normalizedOrbitalPeriod; //360 degrees to radians
 
-            thingsPositions[index].x = parentX + (MathUtils.cos(angle)) * distance;
-            thingsPositions[index].y = parentY + (MathUtils.sin(angle)) * distance;
+            thingsPositions[index].x = parentX + (Mathf.cos(angle)) * distance;
+            thingsPositions[index].y = parentY + (Mathf.sin(angle)) * distance;
             thingsPositions[index].rotation = normalizedRotationPeriod * TWO_PI; //360 degrees to radian
             thingsPositions[index].radius = thing.radius;
         }
@@ -235,7 +247,7 @@ public class Universe
         Vector2 defaultPosition = avatar.getParent().GetPositionFromTileCoordinate(0, avatar.getParent().getHeight() + 5);
         
         ship.Init(
-            1.0f, 1.0f,
+            10.0f, 5.0f,
             avatar.getParent(),
             FollowParentParameters.None,
             defaultPosition.x, defaultPosition.y,

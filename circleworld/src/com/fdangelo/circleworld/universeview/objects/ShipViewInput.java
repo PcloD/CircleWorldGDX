@@ -23,7 +23,7 @@ public class ShipViewInput
     	this.shipView = shipView;
     }
     
-    public void Update()
+    public void Update(float deltaTime)
     {
         if (GameLogic.Instace.getState() != GameLogicState.PlayingShip)
             return;
@@ -32,7 +32,7 @@ public class ShipViewInput
         {
             case Move:
                 UpdateMove();
-                UniverseViewCamera.Instance.UpdateZoomInput();
+                UniverseViewCamera.Instance.UpdateZoomInput(deltaTime);
                 break;
         }
     }
@@ -56,8 +56,8 @@ public class ShipViewInput
             
             if (Gdx.input.isTouched(1))
             {
-            	touch1x = Gdx.input.getX(1);
-            	touch1y = Gdx.input.getY(1);
+            	touch2x = Gdx.input.getX(1);
+            	touch2y = Gdx.input.getY(1);
             	touchCount++;
             }
             
@@ -67,19 +67,19 @@ public class ShipViewInput
 
             if (touchCount >= 1)
             {
-                if (touch1x > screenWidth / 2.0f && touch1y < screenHeight * 0.25f ||
-                    touchCount > 1 && touch2x > screenWidth / 2.0f  && touch2y < screenHeight * 0.25f)
+                if (touch1x > screenWidth / 2.0f && touch1y > screenHeight * 0.75f ||
+                    touchCount > 1 && touch2x > screenWidth / 2.0f  && touch2y > screenHeight * 0.75f)
                 {
                 	shipInput.moveDirection = 1.0f;
                 }
 
-                if (touch1x < screenWidth / 4.0f  && touch1y < screenHeight * 0.25f ||
-                    touchCount > 1 && touch2x < screenWidth / 4.0f && touch2y < screenHeight * 0.25f)
+                if (touch1x < screenWidth / 4.0f  && touch1y > screenHeight * 0.75f ||
+                    touchCount > 1 && touch2x < screenWidth / 4.0f && touch2y > screenHeight * 0.75f)
                 {
                 	shipInput.rotateDirection = -1.0f;
                 }
-                else if (touch1x < screenWidth / 2.0f  && touch1y < screenHeight * 0.25f ||
-                         touchCount > 1 && touch2x < screenWidth / 2.0f && touch2y < screenHeight * 0.25f)
+                else if (touch1x < screenWidth / 2.0f  && touch1y > screenHeight * 0.75f ||
+                         touchCount > 1 && touch2x < screenWidth / 2.0f && touch2y > screenHeight * 0.75f)
                 {
                 	shipInput.rotateDirection = 1.0f;
                 }

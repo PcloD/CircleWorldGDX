@@ -2,58 +2,102 @@ package com.fdangelo.circleworld;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.StringBuilder;
+import com.fdangelo.circleworld.universeengine.utils.UEProfiler;
 
-public class MyGdxGame implements ApplicationListener {
-	private OrthographicCamera camera;
-	private SpriteBatch batch;
-	private Texture texture;
-	private Sprite sprite;
+public class MyGdxGame implements ApplicationListener 
+{
+	private GameLogic gamelogic;
+	private StringBuilder sb;
+	private Stage guistage;
+	private Label performance;
+	private Skin skin;
+	private BitmapFont font;
 	
 	@Override
-	public void create() {		
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
+	public void create() 
+	{		
+		gamelogic = new GameLogic();
 		
-		camera = new OrthographicCamera(1, h/w);
-		batch = new SpriteBatch();
+		initGUI();
+	}
+	
+	private void initGUI() 
+	{
+		guistage = new Stage();
+		Gdx.input.setInputProcessor(guistage);
 		
-		texture = new Texture(Gdx.files.internal("data/libgdx.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		font = new BitmapFont();
 		
-		TextureRegion region = new TextureRegion(texture, 0, 0, 512, 275);
+		skin = new Skin();
+        skin.add("default", new LabelStyle(font, new Color(Color.WHITE)));		
 		
-		sprite = new Sprite(region);
-		sprite.setSize(0.9f, 0.9f * sprite.getHeight() / sprite.getWidth());
-		sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
-		sprite.setPosition(-sprite.getWidth()/2, -sprite.getHeight()/2);
+		Table table = new Table();
+		table.setFillParent(true);
+		guistage.addActor(table);		
+		
+		table.left();
+		table.top();
+		
+		performance = new Label("", skin);
+		table.add(performance);
+		
+		sb = new StringBuilder();
 	}
 
 	@Override
 	public void dispose() {
-		batch.dispose();
-		texture.dispose();
+		gamelogic.dispose();
+		guistage.dispose();
 	}
 
 	@Override
-	public void render() {		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+	public void render() 
+	{		
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		sprite.draw(batch);
-		batch.end();
+		gamelogic.UpdateAndRender(Gdx.graphics.getDeltaTime());
+				
+		guistage.act();
+		guistage.draw();
+		
+		updatePerformance();
+	}
+	
+	private void updatePerformance()
+	{
+		int totalRenderCalls = guistage.getSpriteBatch().renderCalls + gamelogic.getStage().getSpriteBatch().renderCalls;
+		
+		sb.length = 0;
+		sb.append("FPS: ")
+		  .append(Gdx.graphics.getFramesPerSecond())
+		  .append(" Used Memory: ")
+		  .append(Gdx.app.getJavaHeap() / 1024)
+		  .append("kb Used Native: ")
+		  .append(Gdx.app.getNativeHeap() / 1024)
+		  .append("kb Render Calls: ")
+		  .append(totalRenderCalls);
+		
+		performance.setText(sb);
+		
+		UEProfiler.Update();
+		UEProfiler.Clear();
 	}
 
 	@Override
-	public void resize(int width, int height) {
+	public void resize(int width, int height) 
+	{
+		gamelogic.getStage().setViewport(width, height);
+		guistage.setViewport(width, height);
 	}
 
 	@Override

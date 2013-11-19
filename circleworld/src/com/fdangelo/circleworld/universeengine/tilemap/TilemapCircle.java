@@ -3,6 +3,7 @@ package com.fdangelo.circleworld.universeengine.tilemap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.fdangelo.circleworld.universeengine.utils.DataPools;
+import com.fdangelo.circleworld.utils.Mathf;
 import com.fdangelo.circleworld.utils.Vector2I;
 
 public class TilemapCircle
@@ -126,8 +127,8 @@ public class TilemapCircle
         {
             float angle = i * angleStep;
             circleNormals[i] = new Vector2(
-            		MathUtils.sin(angle),
-        			MathUtils.cos(angle));
+            		Mathf.sin(angle),
+        			Mathf.cos(angle));
         }
 
         height0 = (height - 1) * TILE_SIZE;
@@ -222,7 +223,7 @@ public class TilemapCircle
         float dy = positionY - this.positionY;
 
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
-        float angle = -MathUtils.atan2(dy, dx) + MathUtils.PI * 0.5f;
+        float angle = -Mathf.atan2(dy, dx) + MathUtils.PI * 0.5f;
 
         tileCoordinate.y = GetTileYFromDistance(distance);
         tileCoordinate.x = GetTileXFromAngle(angle);
@@ -259,8 +260,8 @@ public class TilemapCircle
     public Vector2 GetNormalFromAngle(float angle)
     {
     	return tmpv1.set(
-            MathUtils.sin(angle), 
-            MathUtils.cos(angle)
+            Mathf.sin(angle), 
+            Mathf.cos(angle)
         );
     }
 
@@ -269,7 +270,7 @@ public class TilemapCircle
         float dx = positionX - this.positionX;
         float dy = positionY - this.positionY;
 
-        float angle = -MathUtils.atan2(dy, dx) + MathUtils.PI * 0.5f;
+        float angle = -Mathf.atan2(dy, dx) + MathUtils.PI * 0.5f;
 
         return angle;
     }
@@ -403,7 +404,7 @@ public class TilemapCircle
         if (originDistance < 0.001f)
             originDistance = 0.001f;
 
-        float originMapAngle = -MathUtils.atan2(dy, dx) + MathUtils.PI * 0.5f;
+        float originMapAngle = -Mathf.atan2(dy, dx) + MathUtils.PI * 0.5f;
 
         while (originMapAngle > MathUtils.PI2)
             originMapAngle -= MathUtils.PI2;
@@ -455,16 +456,9 @@ public class TilemapCircle
                 	
                     hitInfo.hitNormalX = -tanget.x;
                     hitInfo.hitNormalY = -tanget.y;
-
-                    hitInfo.hitPositionX = positionX + 
-                        circleNormals[hitInfo.hitTileX].x * originDistance;
-                    hitInfo.hitPositionY = positionY + 
-                            circleNormals[hitInfo.hitTileX].y * originDistance;
-
-                    float hitDistanceX = originX - hitInfo.hitPositionX;
-                    float hitDistanceY = originY - hitInfo.hitPositionY;
-                    
-                    hitInfo.hitDistance = (float) Math.sqrt(hitDistanceX * hitDistanceX + hitDistanceY * hitDistanceY);
+                    hitInfo.hitPositionX = positionX + circleNormals[hitInfo.hitTileX].x * originDistance;
+                    hitInfo.hitPositionY = positionY + circleNormals[hitInfo.hitTileX].y * originDistance;
+                    hitInfo.hitDistance = Mathf.len(originX - hitInfo.hitPositionX, originY - hitInfo.hitPositionY);
                     
                     return true;
                 }
@@ -515,16 +509,9 @@ public class TilemapCircle
                 	
                     hitInfo.hitNormalX = tangent.x;
                     hitInfo.hitNormalY = tangent.y;
-
-                    hitInfo.hitPositionX = positionX + 
-                        circleNormals[(hitInfo.hitTileX + 1) % width].x * originDistance;
-                    hitInfo.hitPositionX = positionY + 
-                            circleNormals[(hitInfo.hitTileX + 1) % width].y * originDistance;
-                    
-                    float hitDistanceX = originX - hitInfo.hitPositionX;
-                    float hitDistanceY = originY - hitInfo.hitPositionY;
-
-                    hitInfo.hitDistance = (float) Math.sqrt(hitDistanceX * hitDistanceX + hitDistanceY * hitDistanceY);
+                    hitInfo.hitPositionX = positionX + circleNormals[(hitInfo.hitTileX + 1) % width].x * originDistance;
+                    hitInfo.hitPositionX = positionY + circleNormals[(hitInfo.hitTileX + 1) % width].y * originDistance;
+                    hitInfo.hitDistance = Mathf.len(originX - hitInfo.hitPositionX, originY - hitInfo.hitPositionY);
                     return true;
                 }
 
@@ -568,11 +555,7 @@ public class TilemapCircle
                     hitInfo.hitNormalY = -originNormalY;
                     hitInfo.hitPositionX = positionX + originNormalX * circleHeights[hitInfo.hitTileY];
                     hitInfo.hitPositionY = positionY + originNormalY * circleHeights[hitInfo.hitTileY];
-                    
-                    float hitDistanceX = originX - hitInfo.hitPositionX;
-                    float hitDistanceY = originY - hitInfo.hitPositionY;
-                    
-                    hitInfo.hitDistance = (float) Math.sqrt(hitDistanceX * hitDistanceX + hitDistanceY * hitDistanceY);
+                    hitInfo.hitDistance = Mathf.len(originX - hitInfo.hitPositionX, originY - hitInfo.hitPositionY);
                     
                     return true;
                 }
@@ -603,13 +586,9 @@ public class TilemapCircle
                 hitInfo.hitTileY = 0;
                 hitInfo.hitNormalX = originNormalX;
                 hitInfo.hitNormalY = originNormalY;
-                hitInfo.hitPositionX = positionX + originNormalX * circleHeights[0];
-                hitInfo.hitPositionY = positionY + originNormalY * circleHeights[0];
-                
-                float hitDistanceX = originX - hitInfo.hitPositionX;
-                float hitDistanceY = originY - hitInfo.hitPositionY;
-                
-                hitInfo.hitDistance = (float) Math.sqrt(hitDistanceX * hitDistanceX + hitDistanceY * hitDistanceY);
+                hitInfo.hitPositionX = positionX + originNormalX * circleHeights[hitInfo.hitTileY + 1];
+                hitInfo.hitPositionY = positionY + originNormalY * circleHeights[hitInfo.hitTileY + 1];
+                hitInfo.hitDistance = Mathf.len(originX - hitInfo.hitPositionX, originY - hitInfo.hitPositionY);
                 
                 return true;
             }
@@ -634,12 +613,8 @@ public class TilemapCircle
                     hitInfo.hitNormalX = originNormalX;
                     hitInfo.hitNormalY = originNormalY;
                     hitInfo.hitPositionX = positionX + originNormalX * circleHeights[hitInfo.hitTileY + 1];
-                    hitInfo.hitPositionY = positionY + originNormalX * circleHeights[hitInfo.hitTileY + 1];
-                    
-                    float hitDistanceX = originX - hitInfo.hitPositionX;
-                    float hitDistanceY = originY - hitInfo.hitPositionY;
-                    
-                    hitInfo.hitDistance = (float) Math.sqrt(hitDistanceX * hitDistanceX + hitDistanceY * hitDistanceY);
+                    hitInfo.hitPositionY = positionY + originNormalY * circleHeights[hitInfo.hitTileY + 1];
+                    hitInfo.hitDistance = Mathf.len(originX - hitInfo.hitPositionX, originY - hitInfo.hitPositionY);
 
                     return true;
                 }

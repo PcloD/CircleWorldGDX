@@ -3,6 +3,7 @@ package com.fdangelo.circleworld.universeengine.tilemap;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.fdangelo.circleworld.GameLogic;
 
 public class PlanetTypes
 {
@@ -10,6 +11,9 @@ public class PlanetTypes
     
     static public PlanetType[] GetPlanetTypes()
     {
+    	if (planetTypes == null)
+    		InitPlanetTypes();
+    	
         return planetTypes;
     }
     
@@ -18,8 +22,10 @@ public class PlanetTypes
         return GetPlanetTypes()[id];
     }
         
-    static public void InitPlanetTypes(AssetManager assetManager)
+    static public void InitPlanetTypes()
     {
+    	AssetManager assetManager = GameLogic.Instace.assetManager;
+    	
     	TextureAtlas atlas = assetManager.get("atlas/planets.atlas", TextureAtlas.class);
         planetTypes = new PlanetType[256];
         

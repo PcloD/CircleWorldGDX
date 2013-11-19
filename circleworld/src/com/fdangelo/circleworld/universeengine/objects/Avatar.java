@@ -28,7 +28,7 @@ public class Avatar extends UniverseObject
                 if (input.walkDirection != 0)
                     velocityX += input.walkDirection * walkAcceleration * deltaTime;
                 else
-                    velocityY -= Mathf.Sign(velocityX) * MathUtils.clamp(walkFriction * deltaTime, 0, Math.abs(velocityX));
+                    velocityX -= Mathf.Sign(velocityX) * MathUtils.clamp(walkFriction * deltaTime, 0, Math.abs(velocityX));
                     
                 velocityX = MathUtils.clamp(velocityX, -walkSpeedMax, walkSpeedMax);
             }

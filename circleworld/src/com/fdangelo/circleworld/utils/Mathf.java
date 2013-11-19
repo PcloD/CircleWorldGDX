@@ -36,4 +36,24 @@ public class Mathf
 		else
 			return -1.0f;
 	}
+	
+	static public float len(float dx, float dy)
+	{
+		return (float) Math.sqrt(dx * dx + dy * dy);
+	}
+	
+	static public float atan2(float dy, float dx)
+	{
+		return (float) Math.atan2(dy, dx);
+	}
+
+	static public float sin(float rad)
+	{
+		return (float) Math.sin(rad);
+	}
+
+	static public float cos(float rad)
+	{
+		return (float) Math.cos(rad);
+	}
 }

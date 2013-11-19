@@ -44,8 +44,8 @@ public class Ship extends UniverseObject
             
             currentSpeed = MathUtils.clamp(currentSpeed, 0, movementSpeedMax);
                        
-            velocityX = MathUtils.sin(getRotation()) * currentSpeed;
-            velocityY = MathUtils.cos(getRotation()) * currentSpeed;
+            velocityX = Mathf.sin(getRotation()) * currentSpeed;
+            velocityY = Mathf.cos(getRotation()) * currentSpeed;
         }
         else if (GameLogic.Instace.getState() == GameLogicState.PlayingAvatar)
         {

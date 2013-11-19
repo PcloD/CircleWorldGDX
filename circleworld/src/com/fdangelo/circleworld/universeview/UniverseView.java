@@ -2,8 +2,13 @@ package com.fdangelo.circleworld.universeview;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.fdangelo.circleworld.universeengine.IUniverseListener;
+import com.fdangelo.circleworld.universeengine.Thing;
+import com.fdangelo.circleworld.universeengine.ThingPosition;
+import com.fdangelo.circleworld.universeengine.ThingType;
 import com.fdangelo.circleworld.universeengine.Universe;
 import com.fdangelo.circleworld.universeengine.objects.Avatar;
 import com.fdangelo.circleworld.universeengine.objects.Ship;
@@ -22,7 +27,7 @@ public class UniverseView extends Actor implements IUniverseListener
 {
     private UniverseViewFactory universeFactory = new UniverseViewFactory();
     
-    static private final int MaxActivePlanetViews = 5;
+    static public final int MaxActivePlanetViews = 5;
     
     public AvatarView avatarView;
 
@@ -33,6 +38,8 @@ public class UniverseView extends Actor implements IUniverseListener
     private PlanetView[] planetViews = new PlanetView[Universe.MAX_THINGS];
     private ArrayList<PlanetView> activePlanetViews = new ArrayList<PlanetView>(32);
     private ArrayList<UniverseObjectView> tilemapObjectViews = new ArrayList<UniverseObjectView>(32);
+    
+    private Stage stage;
 
     //private Mesh mesh1;
     //private Mesh mesh2;
@@ -50,7 +57,7 @@ public class UniverseView extends Actor implements IUniverseListener
         return universe;
     }
         
-    public UniverseView()
+    public UniverseView(Stage stage)
     {
         //rend = renderer;
         //trans = transform;
@@ -60,6 +67,7 @@ public class UniverseView extends Actor implements IUniverseListener
         //trans.localRotation = Quaternion.identity;
         
         //renderer.sharedMaterial.mainTexture = SpriteMeshEngine.SpriteSheetManager.GetSpriteSheet("Planets").Texture;
+        this.stage = stage;
         
         planetTypes = PlanetTypes.GetPlanetTypes();
 
@@ -153,6 +161,8 @@ public class UniverseView extends Actor implements IUniverseListener
             avatarView.Init((Avatar) universeObject, this);
             
             tilemapObjectViews.add(avatarView);
+            
+            stage.addActor(avatarView);
         }
         else if (universeObject instanceof Ship)
         {
@@ -160,6 +170,8 @@ public class UniverseView extends Actor implements IUniverseListener
             shipView.Init((Ship) universeObject, this);
             
             tilemapObjectViews.add(shipView);
+            
+            stage.addActor(shipView);
         }
     }
  
@@ -175,6 +187,32 @@ public class UniverseView extends Actor implements IUniverseListener
             UEProfiler.BeginSample("UniverseView.UpdateMesh");
             UpdateMesh(false);
             UEProfiler.EndSample();
+        }
+    }
+    
+    @Override
+    public void draw (SpriteBatch batch, float parentAlpha)
+    {
+        Thing[] things = universe.getThings();
+        ThingPosition[] thingsPositions = universe.getThingsPositions();
+        short[] thingsToRender = universe.getThingsToRender();
+        short thingsToRenderAmount = universe.getThingsToRenderAmount();
+        
+        for (int i = 0; i < thingsToRenderAmount; i++)
+        {
+            short thingIndex = thingsToRender[i];
+            
+            ThingPosition position = thingsPositions[thingIndex];
+            Thing thing = things[thingIndex];
+            
+            PlanetType planetType;
+            
+            if (thing.type == ThingType.Sun)
+                planetType = planetTypes[Math.abs(thing.seed % 2) + 4]; //suns!
+            else
+                planetType = planetTypes[Math.abs(thing.seed % 4)]; //planets!
+            
+            batch.draw(planetType.planetSprite, position.x - position.radius, position.y - position.radius, position.radius * 2.0f, position.radius * 2.0f);
         }
     }
     

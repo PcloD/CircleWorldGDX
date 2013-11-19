@@ -1,6 +1,5 @@
 package com.fdangelo.circleworld.universeview.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 
 public class InputAreas
@@ -25,8 +24,6 @@ public class InputAreas
     static public boolean IsInputArea(float x, float y)
     {
         //Convert from Input coordinate system to GUI coordinate system
-        y = Gdx.graphics.getHeight() - y;
-        
         for (int i = 0; i < inputAreasCount; i++)
             if (inputAreas[i].contains(x, y))
                 return true;

@@ -8,8 +8,8 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "circleworld";
 		cfg.useGL20 = true;
-		cfg.width = 480;
-		cfg.height = 320;
+		cfg.width = 1024;
+		cfg.height = 768;
 		
 		new LwjglApplication(new MyGdxGame(), cfg);
 	}

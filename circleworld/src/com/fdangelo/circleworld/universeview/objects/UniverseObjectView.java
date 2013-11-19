@@ -1,5 +1,6 @@
 package com.fdangelo.circleworld.universeview.objects;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.fdangelo.circleworld.universeengine.objects.IUniverseObjectListener;
 import com.fdangelo.circleworld.universeengine.objects.UniverseObject;
@@ -39,9 +40,11 @@ public class UniverseObjectView extends Actor implements IUniverseObjectListener
         this.universeView = universeView;
         this.universeObject = universeObject;
         
-        universeObject.Listener = this;
+        universeObject.setListener(this);
         
-        parentView = universeView.GetPlanetView(universeObject.parent);
+        parentView = universeView.GetPlanetView(universeObject.getParent());
+        
+        setSize(universeObject.getSizeX(), universeObject.getSizeY());
         
         UpdatePosition();
     }
@@ -53,31 +56,31 @@ public class UniverseObjectView extends Actor implements IUniverseObjectListener
     
     public void OnParentChanged(TilemapCircle parent)
     {
-        parentView = universeView.GetPlanetView(universeObject.parent);
+        parentView = universeView.GetPlanetView(universeObject.getParent());
         
         UpdatePosition();
     }
 
     protected void UpdatePosition()
     {
-        if (universeObject.Visible)
+        if (universeObject.getVisible())
         {
             if (!visible)
             {
                 visible = true;
-                go.SetActive(true);
+                setVisible(true);
             }
-
-            trans.localPosition = universeObject.Position;
-            trans.localScale = Vector3.one * universeObject.Scale;
-            trans.localRotation = Quaternion.AngleAxis(-universeObject.Rotation * Mathf.Rad2Deg, Vector3.forward);
+            
+            setPosition(universeObject.getPositionX(), universeObject.getPositionY());
+            setScale(universeObject.getScale());
+            setRotation(universeObject.getRotation() * MathUtils.radiansToDegrees);
         }
         else
         {
             if (visible)
             {
                 visible = false;
-                go.SetActive(false);
+                setVisible(false);
             }
         }
     }
