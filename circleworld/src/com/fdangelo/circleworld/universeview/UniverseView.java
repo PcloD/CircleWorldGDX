@@ -40,17 +40,8 @@ public class UniverseView extends Actor implements IUniverseListener
     private ArrayList<UniverseObjectView> tilemapObjectViews = new ArrayList<UniverseObjectView>(32);
     
     private Stage stage;
-
-    //private Mesh mesh1;
-    //private Mesh mesh2;
-    //private int frameCount;
-    
-    //private Renderer rend;
-    //private Transform trans;
     
     private PlanetType[] planetTypes;
-
-    //private MeshFilter meshFilter;
     
     public Universe getUniverse()
     {
@@ -59,23 +50,9 @@ public class UniverseView extends Actor implements IUniverseListener
         
     public UniverseView(Stage stage)
     {
-        //rend = renderer;
-        //trans = transform;
-        
-        //trans.localPosition = Vector3.zero;
-        //trans.localScale = Vector3.one;
-        //trans.localRotation = Quaternion.identity;
-        
-        //renderer.sharedMaterial.mainTexture = SpriteMeshEngine.SpriteSheetManager.GetSpriteSheet("Planets").Texture;
         this.stage = stage;
         
         planetTypes = PlanetTypes.GetPlanetTypes();
-
-        //meshFilter = GetComponent<MeshFilter>();
-        
-        //mesh1 = new Mesh();
-        
-        //mesh2 = new Mesh();
     }
     
     public void Init(int seed)
@@ -127,6 +104,8 @@ public class UniverseView extends Actor implements IUniverseListener
         
         activePlanetViews.add(planetView);
         
+        stage.addActor(planetView);
+        
         planetViews[thingIndex] = planetView;
         
         //Debug.Log(planetViews.Count);
@@ -143,6 +122,9 @@ public class UniverseView extends Actor implements IUniverseListener
             if (activePlanetViews.get(i).getPlanet() == planet)
             {
                 PlanetView planetView = activePlanetViews.get(i);
+                
+                //remove from stage
+                planetView.remove();
                 
                 universeFactory.ReturnPlanet(planetView);
                 
@@ -201,6 +183,9 @@ public class UniverseView extends Actor implements IUniverseListener
         for (int i = 0; i < thingsToRenderAmount; i++)
         {
             short thingIndex = thingsToRender[i];
+            
+            if (planetViews[thingIndex] != null)
+            	continue;
             
             ThingPosition position = thingsPositions[thingIndex];
             Thing thing = things[thingIndex];

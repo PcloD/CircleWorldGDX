@@ -1,7 +1,12 @@
 package com.fdangelo.circleworld.universeview.tilemap;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.fdangelo.circleworld.GameLogic;
 import com.fdangelo.circleworld.universeengine.tilemap.ITilemapCircleListener;
 import com.fdangelo.circleworld.universeengine.tilemap.TilemapCircle;
 
@@ -16,8 +21,13 @@ public class TilemapCircleView extends Actor implements ITilemapCircleListener
 
     private TilemapCircle tilemapCircle;
     
-    public TilemapCircle getTilemapCircle()
-    {
+    private Texture tilesetTexture;
+    
+    public Texture getTilesetTexture() {
+    	return tilesetTexture;
+    }
+    
+    public TilemapCircle getTilemapCircle() {
         return tilemapCircle;
     }
     
@@ -30,6 +40,10 @@ public class TilemapCircleView extends Actor implements ITilemapCircleListener
         this.tilemapCircle = tilemapCircle;
         
         tilemapCircle.setListener(this);
+        
+        //Use the first texture in the atlas as the tileset texture
+        TextureAtlas atlas = GameLogic.Instace.assetManager.get("atlas/tilemap.atlas", TextureAtlas.class);
+        tilesetTexture = atlas.getTextures().iterator().next();
         
         UpdatePosition();
         
@@ -122,6 +136,27 @@ public class TilemapCircleView extends Actor implements ITilemapCircleListener
         
         UpdateMesh();
     }
+    
+    static private Matrix4 tmpMatrix4 = new Matrix4();
+    
+    @Override
+	public void draw(SpriteBatch batch, float parentAlpha) 
+    {
+    	batch.end();
+    	
+    	tmpMatrix4.set(batch.getProjectionMatrix());
+		tmpMatrix4.mul(batch.getTransformMatrix());
+    	tmpMatrix4.translate(getX(), getY(), 0);
+		
+    	backgroundRenderer.draw(tmpMatrix4);
+    	
+    	TilemapCircleViewRenderer.beginDraw(tmpMatrix4, tilesetTexture);
+    	for (int i = 0; i < renderers.length; i++)
+    		renderers[i].draw();
+    	TilemapCircleViewRenderer.endDraw();
+    	
+    	batch.begin();
+	}
     
     private void UpdatePosition()
     {

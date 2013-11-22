@@ -24,11 +24,13 @@ public class PlanetView extends TilemapCircleView
         this.universeView = universeView;
         
         Init(planet);
-    }
-    
-    @Override
+    }   
+        
+	@Override
     public void Recycle()
     {
+		remove();
+		
         universeView = null;
         planet = null;
         

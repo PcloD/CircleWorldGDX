@@ -1,6 +1,14 @@
 package com.fdangelo.circleworld.universeview.tilemap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL11;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
@@ -8,7 +16,6 @@ import com.fdangelo.circleworld.universeengine.tilemap.TileSubtype;
 import com.fdangelo.circleworld.universeengine.tilemap.TileType;
 import com.fdangelo.circleworld.universeengine.tilemap.TileTypes;
 import com.fdangelo.circleworld.universeengine.tilemap.TilemapCircle;
-import com.fdangelo.circleworld.universeengine.utils.DataPools;
 
 public class TilemapCircleViewRenderer implements Disposable
 {
@@ -16,43 +23,79 @@ public class TilemapCircleViewRenderer implements Disposable
 
     private int fromX;
     private int toX;
-    //private TilemapCircleView tilemapCircleView;
     private TilemapCircle tilemapCircle;
     
     private Vector2[] circleNormals;
     private float[] circleHeights;
 
-    private boolean firstTime;
-    
-    //private Mesh mesh;
-    //private MeshFilter meshFilter;
-    //private MeshRenderer meshRenderer;
+    private Mesh mesh;
     
     static private TileType[] tileTypes;
+    static private ShaderProgram shader;
+    static private int shaderWorldViewLocation;
+    static private int shaderTextureLocation;
+    
+    private float halfTexelWidth;
+    private float halfTexelHeight;
     
     public TilemapCircleViewRenderer()
     {
-        //meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        //meshFilter = gameObject.AddComponent<MeshFilter>();
-        //mesh = new Mesh();
-        
         if (tileTypes == null)
             tileTypes = TileTypes.GetTileTypes();
+        
+    	if (shader == null)
+    	{
+    		String vertexShader = 
+    				"attribute vec4 a_position;\n" + 
+                    "attribute vec4 a_color;\n" +
+                    "attribute vec2 a_texCoord0;\n" + 
+                    "uniform mat4 u_projTrans;\n" +
+                    "varying vec4 v_color;" +
+                    "varying vec2 v_texCoords;" + 
+                    "void main()                  \n" + 
+                    "{                            \n" + 
+                    "   v_color = a_color; \n" + 
+                    "   v_texCoords = a_texCoord0; \n" + 
+                    "   gl_Position =  u_projTrans * a_position;  \n"+ 
+                    "}";
+    		
+			String fragmentShader = 
+					"#ifdef GL_ES\n" +
+					"#define LOWP lowp\n" +
+					"precision mediump float;\n" +
+					"#else\n" +
+					"#define LOWP \n" +
+					"#endif\n" +
+					"varying LOWP vec4 v_color;\n" + 
+					"varying vec2 v_texCoords;\n" + 
+					"uniform sampler2D u_texture;\n" + 
+					"void main()                                  \n" + 
+					"{                                            \n" + 
+					"  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" +
+					"}";
+			
+			shader = new ShaderProgram(vertexShader, fragmentShader);
+			
+			if (!shader.isCompiled()) 
+				throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+			
+			shaderWorldViewLocation = shader.getUniformLocation("u_projTrans");
+			shaderTextureLocation = shader.getUniformLocation("u_texture");
+    	}
     }
     
     public void Init(TilemapCircleView tilemapCircleView, int fromX, int toX)
     {
         dirty = true;
-        firstTime = true;
 
-        //this.tilemapCircleView = tilemapCircleView;
         this.tilemapCircle = tilemapCircleView.getTilemapCircle();
         this.fromX = fromX;
         this.toX = toX;
         this.circleNormals = tilemapCircle.getCircleNormals();
         this.circleHeights = tilemapCircle.getCircleHeights();
         
-        //meshRenderer.sharedMaterial = tilemapCircleView.material;
+        halfTexelWidth = 0.5f * (1.0f / tilemapCircleView.getTilesetTexture().getWidth());
+        halfTexelHeight = 0.5f * (1.0f / tilemapCircleView.getTilesetTexture().getHeight());
     }
 
     public void SetDirty()
@@ -64,6 +107,11 @@ public class TilemapCircleViewRenderer implements Disposable
     static private Vector2 p2 = new Vector2();
     static private Vector2 p3 = new Vector2();
     static private Vector2 p4 = new Vector2();
+    
+    static private Vector3 tmpv3 = new Vector3();
+    static private Vector2 tmpv2 = new Vector2();
+    
+    static private MeshBuilder meshBuilder = new MeshBuilder();
 
     public void UpdateMesh()
     {
@@ -71,19 +119,24 @@ public class TilemapCircleViewRenderer implements Disposable
             return;
 
         dirty = false;
+        
+        if (mesh != null)
+        {
+        	mesh.dispose();
+        	mesh = null;
+        }
 
         int vertexOffset = 0;
-        int triangleOffset = 0;
 
         int height = tilemapCircle.getHeight();
         int width = tilemapCircle.getWidth();
         
-        int vertexCount = (toX - fromX) * tilemapCircle.getHeight() * 4;
-        int triangleCount = (toX - fromX) * tilemapCircle.getHeight() * 6;
-        
-        Vector3[] vertices = DataPools.poolVector3.GetArray(vertexCount);
-        Color[] colors = DataPools.poolColor.GetArray(vertexCount);
-        Vector2[] uvs = DataPools.poolVector2.GetArray(vertexCount);
+        int totalTriangles = height * (toX - fromX) * 2;
+        int totalIndices = totalTriangles * 3;
+        int totalVertices = height * (toX - fromX) * 4;
+                
+        meshBuilder.begin(Usage.Position | Usage.Color | Usage.TextureCoordinates);
+        meshBuilder.ensureCapacity(totalVertices, totalIndices);
 
         for (int y = 0; y < height; y++)
         {
@@ -110,27 +163,6 @@ public class TilemapCircleViewRenderer implements Disposable
                 }
                 
                 TileType tileType = tileTypes[tileId];
-
-                vertices[vertexOffset + 0].set(p1.x, p1.y, 0);
-                vertices[vertexOffset + 1].set(p2.x, p2.y, 0);
-                vertices[vertexOffset + 2].set(p3.x, p3.y, 0);
-                vertices[vertexOffset + 3].set(p4.x, p4.y, 0);
-    
-                //if (tilemapCircleView.debugColor)
-                //{
-                //    colors[vertexOffset + 0] = Color.red;
-                //    colors[vertexOffset + 1] = Color.green;
-                //    colors[vertexOffset + 2] = Color.blue;
-                //    colors[vertexOffset + 3] = Color.cyan;
-                //}
-                //else
-                //{
-                    colors[vertexOffset + 0].set(Color.WHITE);
-                    colors[vertexOffset + 1].set(Color.WHITE);
-                    colors[vertexOffset + 2].set(Color.WHITE);
-                    colors[vertexOffset + 3].set(Color.WHITE);
-                //}
-                
                 TileSubtype subtype;
                 
                 if (y == height - 1 || tilemapCircle.GetTile(x, y + 1) == 0)
@@ -138,66 +170,81 @@ public class TilemapCircleViewRenderer implements Disposable
                 else
                     subtype = tileType.center;
 
-                uvs[vertexOffset + 0].x = subtype.uvFromX;
-                uvs[vertexOffset + 0].y = subtype.uvToY;
-                
-                uvs[vertexOffset + 1].x = subtype.uvToX;
-                uvs[vertexOffset + 1].y = subtype.uvToY;
-                
-                uvs[vertexOffset + 2].x = subtype.uvToX;
-                uvs[vertexOffset + 2].y = subtype.uvFromY;
-                
-                uvs[vertexOffset + 3].x = subtype.uvFromX;
-                uvs[vertexOffset + 3].y = subtype.uvFromY;
+                meshBuilder.vertex(
+                		tmpv3.set(p1.x, p1.y, 0),
+                		null,
+                		Color.WHITE,
+                		tmpv2.set(subtype.uvFromX + halfTexelWidth, subtype.uvFromY + halfTexelHeight));
+                		
+                meshBuilder.vertex(
+                		tmpv3.set(p2.x, p2.y, 0),
+                		null,
+                		Color.WHITE,
+                		tmpv2.set(subtype.uvToX - halfTexelWidth, subtype.uvFromY + halfTexelHeight));
 
-                vertexOffset += 4;
-                triangleOffset += 6;
+                meshBuilder.vertex(
+                		tmpv3.set(p3.x, p3.y, 0),
+                		null,
+                		Color.WHITE,
+                		tmpv2.set(subtype.uvToX - halfTexelWidth, subtype.uvToY - halfTexelHeight));
+
+                meshBuilder.vertex(
+                		tmpv3.set(p4.x, p4.y, 0),
+                		null,
+                		Color.WHITE,
+                		tmpv2.set(subtype.uvFromX + halfTexelWidth, subtype.uvToY - halfTexelHeight));
             }
         }
-
-        //mesh.vertices = vertices;
-        //mesh.uv = uvs;
-        //mesh.colors32 = colors;
-
-        if (firstTime)
+        
+        int size = height * (toX - fromX);
+        
+        vertexOffset = 0;
+        
+        for (int i = 0; i < size; i++)
         {
-            int[] triangles = DataPools.poolInt.GetArray(triangleCount);
-        
-            int size = height * (toX - fromX);
-            
-            vertexOffset = 0;
-            triangleOffset = 0;
-            
-            for (int i = 0; i < size; i++)
-            {
-                triangles[triangleOffset + 0] = vertexOffset + 0;
-                triangles[triangleOffset + 1] = vertexOffset + 1;
-                triangles[triangleOffset + 2] = vertexOffset + 2;
-
-                triangles[triangleOffset + 3] = vertexOffset + 2;
-                triangles[triangleOffset + 4] = vertexOffset + 3;
-                triangles[triangleOffset + 5] = vertexOffset + 0;
-                
-                triangleOffset += 6;
-                vertexOffset += 4;
-            }
-            
-            //mesh.triangles = triangles;
-            
-            DataPools.poolInt.ReturnArray(triangles);
+        	meshBuilder.triangle(
+        			(short) (vertexOffset + 0),
+        			(short) (vertexOffset + 1),
+					(short) (vertexOffset + 2));
+        	
+        	meshBuilder.triangle(
+        			(short) (vertexOffset + 2),
+        			(short) (vertexOffset + 3),
+					(short) (vertexOffset + 0));
+        	
+            vertexOffset += 4;
         }
-
-        //meshFilter.sharedMesh = mesh;
         
-        DataPools.poolColor.ReturnArray(colors);
-        DataPools.poolVector3.ReturnArray(vertices);
-        DataPools.poolVector2.ReturnArray(uvs);
-
-        firstTime = false;
+        mesh = meshBuilder.end();
     }
 
 	public void dispose() 
 	{
-		//TODO: Dispose
+        if (mesh != null)
+        {
+        	mesh.dispose();
+        	mesh = null;
+        }
+	}
+	
+	static public void beginDraw(Matrix4 matrix, Texture texture)
+	{
+		Gdx.gl.glDepthMask(false);
+		Gdx.gl.glEnable(GL11.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		texture.bind();
+		shader.begin();
+		shader.setUniformi(shaderTextureLocation, 0);
+		shader.setUniformMatrix(shaderWorldViewLocation, matrix);
+	}
+
+	public void draw() 
+	{
+		mesh.render(shader, GL11.GL_TRIANGLES);
+	}
+	
+	static public void endDraw()
+	{
+		shader.end();
 	}
 }
