@@ -1,6 +1,6 @@
 package com.fdangelo.circleworld.universeview.objects;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.fdangelo.circleworld.GameLogic;
@@ -25,7 +25,7 @@ public class AvatarView extends UniverseObjectView
 	
 	
 	@Override
-	public void draw(SpriteBatch batch, float parentAlpha) {
+	public void draw(Batch batch, float parentAlpha) {
 		batch.draw(sprite, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), -getRotation()); //, getUniverseObject().getSizeX(), getUniverseObject().getSizeY());
 	}
 

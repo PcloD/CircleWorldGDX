@@ -75,7 +75,7 @@ public class TilemapCircleViewBackgroundRenderer implements Disposable
     static private Color fromColor = new Color();
     static private Color toColor = new Color();
     
-    static private MeshBuilder meshBuilder = new MeshBuilder();
+    static private MeshBuilder meshBuilder;
     static private Vector3 vertexPos = new Vector3();
     static private Color vertexColor = new Color();
     
@@ -103,12 +103,19 @@ public class TilemapCircleViewBackgroundRenderer implements Disposable
         int totalIndices = totalTriangles * 3;
         int totalVertices = circleNormals.length + 1;
         
-        meshBuilder.begin(Usage.Position | Usage.Color);
-        meshBuilder.ensureCapacity(totalVertices, totalIndices);
+        if (meshBuilder == null)
+        {
+        	meshBuilder = new MeshBuilder();
+	        meshBuilder.begin(Usage.Position | Usage.Color);
+	        meshBuilder.ensureCapacity(totalVertices + 1, totalIndices + 1);
+        }
+        else
+        {
+        	meshBuilder.begin(Usage.Position | Usage.Color);
+        }
         
         float heavenHeight = circleHeights[circleHeights.length - 1] + 
                              (circleHeights[circleHeights.length - 1] - circleHeights[circleHeights.length - 2]) * 5.0f; //Repeat the last tile height 5 times
-        
         
         vertexPos.set(0, 0, -10);
         vertexColor.set(fromColor);

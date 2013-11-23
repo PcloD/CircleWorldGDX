@@ -22,7 +22,7 @@ public class Universe
     //private static final float INV_TWO_PI = 1.0f / (MathUtils.PI * 2.0f); 
     private static final float DEG_TO_RAD_OVER_100 = 0.000174532925f; //(degrees to radians / 100)
         
-    private static final float POSITIONS_TIME_SCALE = 1.0f; //0.01f;
+    private static final float POSITIONS_TIME_SCALE = 0.01f;
 
     private Thing[] things;
     private ThingPosition[] thingsPositions;

@@ -98,6 +98,14 @@ public class ShipViewInput
         		shipInput.moveDirection = 1;
         	else
         		shipInput.moveDirection = 0;
+        	
+        	
+            //if (Gdx.input.isKeyPressed(Input.Keys.T))
+            //{
+            //    int clickedThingIndex = shipView.getUniverseView().getUniverse().FindClosestRenderedThing(shipView.getUniverseObject().getPositionX(), shipView.getUniverseObject().getPositionY(), 30.0f);
+            //    if (clickedThingIndex >= 0)
+            //        GameLogic.Instace.PlayerLeaveShip(shipView.getUniverseView().getUniverse().GetPlanet((short) clickedThingIndex));
+            //}
         }
     }
     

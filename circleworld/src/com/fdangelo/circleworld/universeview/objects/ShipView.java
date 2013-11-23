@@ -1,6 +1,6 @@
 package com.fdangelo.circleworld.universeview.objects;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ShortArray;
@@ -27,8 +27,8 @@ public class ShipView extends UniverseObjectView
 	}
 	
 	@Override
-	public void draw(SpriteBatch batch, float parentAlpha) {
-		batch.draw(sprite, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), -getRotation() + 90.0f); //, getUniverseObject().getSizeX(), getUniverseObject().getSizeY());
+	public void draw(Batch batch, float parentAlpha) {
+		batch.draw(sprite, getX() - getWidth() * 0.5f, getY() - getHeight() * 0.5f, getWidth() * 0.5f, getHeight() * 0.5f, getWidth(), getHeight(), getScaleX(), getScaleY(), -getRotation() + 90.0f); //, getUniverseObject().getSizeX(), getUniverseObject().getSizeY());
 	}
 	
 	/*

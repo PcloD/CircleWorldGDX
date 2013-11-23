@@ -103,6 +103,11 @@ public class TilemapCircleViewRenderer implements Disposable
         dirty = true;
     }
     
+    public boolean IsDirty()
+    {
+    	return dirty;
+    }
+    
     static private Vector2 p1 = new Vector2();
     static private Vector2 p2 = new Vector2();
     static private Vector2 p3 = new Vector2();
@@ -111,7 +116,7 @@ public class TilemapCircleViewRenderer implements Disposable
     static private Vector3 tmpv3 = new Vector3();
     static private Vector2 tmpv2 = new Vector2();
     
-    static private MeshBuilder meshBuilder = new MeshBuilder();
+    static private MeshBuilder meshBuilder;
 
     public void UpdateMesh()
     {
@@ -130,13 +135,17 @@ public class TilemapCircleViewRenderer implements Disposable
 
         int height = tilemapCircle.getHeight();
         int width = tilemapCircle.getWidth();
-        
-        int totalTriangles = height * (toX - fromX) * 2;
-        int totalIndices = totalTriangles * 3;
-        int totalVertices = height * (toX - fromX) * 4;
-                
-        meshBuilder.begin(Usage.Position | Usage.Color | Usage.TextureCoordinates);
-        meshBuilder.ensureCapacity(totalVertices, totalIndices);
+               
+        if (meshBuilder == null)
+        {
+        	meshBuilder = new MeshBuilder();
+        	meshBuilder.begin(Usage.Position | Usage.Color | Usage.TextureCoordinates);
+	        meshBuilder.ensureCapacity(8192, 16384);
+        }
+        else
+        {
+        	meshBuilder.begin(Usage.Position | Usage.Color | Usage.TextureCoordinates);
+        }
 
         for (int y = 0; y < height; y++)
         {
@@ -240,7 +249,8 @@ public class TilemapCircleViewRenderer implements Disposable
 
 	public void draw() 
 	{
-		mesh.render(shader, GL11.GL_TRIANGLES);
+		if (mesh != null)
+			mesh.render(shader, GL11.GL_TRIANGLES);
 	}
 	
 	static public void endDraw()

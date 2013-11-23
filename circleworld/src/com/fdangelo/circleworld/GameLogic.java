@@ -2,7 +2,6 @@ package com.fdangelo.circleworld;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.fdangelo.circleworld.universeengine.objects.Avatar;
 import com.fdangelo.circleworld.universeengine.tilemap.Planet;
@@ -26,8 +25,6 @@ public class GameLogic implements Disposable
     private GameLogicState state = GameLogicState.PlayingAvatar;
     private float stateTime;
     
-    private Stage stage;
-    
     private float universeTimeMultiplier = 1.0f;
     
     public GameLogicState getState()
@@ -35,18 +32,9 @@ public class GameLogic implements Disposable
         return state;
     }
     
-    public Stage getStage()
-    {
-    	return stage;
-    }
-    
-    
 	public GameLogic () 
     {
 		Instace = this;
-		
-		stage = new Stage();
-		universeCamera = new UniverseViewCamera(stage);
 		
 		assetManager = new AssetManager();
 		
@@ -99,12 +87,13 @@ public class GameLogic implements Disposable
         		{
         			//Loading complete!
         			
-		    		universeView = new UniverseView(stage);
+        			//Create layers
+		    		universeView = new UniverseView();
 		            universeView.Init(universeSeed);
 		            
-		            SwitchState(GameLogicState.PlayingAvatar);
+		            universeCamera = new UniverseViewCamera(universeView.getCamera());
 		            
-		            stage.addActor(universeView);
+		            SwitchState(GameLogicState.PlayingAvatar);
         		}
 	            break;
 	            
@@ -129,8 +118,8 @@ public class GameLogic implements Disposable
                 break;
         }
         
-        stage.act(deltaTime);
-        stage.draw();
+        if (universeView != null)
+        	universeView.updateStages(deltaTime);
 	}
     
     public void TravelToPlanet(PlanetView targetPlanetView)
@@ -159,7 +148,16 @@ public class GameLogic implements Disposable
     
     public void dispose()
     {
-    	stage.dispose();
+		if (universeView != null)
+			universeView.dispose();
+		
     	assetManager.dispose();
     }
+
+	public void resize(int width, int height) {
+		
+		if (universeView != null)
+			universeView.resize(width, height);
+		
+	}
 }

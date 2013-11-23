@@ -2,14 +2,14 @@ package com.fdangelo.circleworld;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.fdangelo.circleworld.universeengine.utils.UEProfiler;
 
@@ -20,7 +20,6 @@ public class MyGdxGame implements ApplicationListener
 	private Stage guistage;
 	private Label performance;
 	private Skin skin;
-	private BitmapFont font;
 	
 	@Override
 	public void create() 
@@ -35,20 +34,48 @@ public class MyGdxGame implements ApplicationListener
 		guistage = new Stage();
 		Gdx.input.setInputProcessor(guistage);
 		
-		font = new BitmapFont();
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 		
-		skin = new Skin();
-        skin.add("default", new LabelStyle(font, new Color(Color.WHITE)));		
+		Table rootTable = new Table();
+		rootTable.setFillParent(true);
+		guistage.addActor(rootTable);
 		
-		Table table = new Table();
-		table.setFillParent(true);
-		guistage.addActor(table);		
-		
-		table.left();
-		table.top();
+		rootTable.left();
+		rootTable.top();
 		
 		performance = new Label("", skin);
-		table.add(performance);
+		
+		rootTable.add(performance);
+		
+		final TextButton switchButton = new TextButton("BOARD SHIP", skin);
+				
+		switchButton.addListener(new ChangeListener() {
+			public void changed (ChangeEvent event, Actor actor) {
+					
+					switch(gamelogic.getState())
+					{
+						case PlayingAvatar:
+							switchButton.setText("LEAVE SHIP");
+							GameLogic.Instace.PlayerBoardShip();
+							break;
+							
+						case PlayingShip:
+				            int clickedThingIndex = gamelogic.universeView.getUniverse().FindClosestRenderedThing(gamelogic.universeView.shipView.getUniverseObject().getPositionX(), gamelogic.universeView.shipView.getUniverseObject().getPositionY(), 30.0f);
+				            if (clickedThingIndex >= 0)
+				            {
+								switchButton.setText("BOARD SHIP");
+				                GameLogic.Instace.PlayerLeaveShip(gamelogic.universeView.getUniverse().GetPlanet((short) clickedThingIndex));
+				            }
+							break;
+							
+						default:
+							//Nothing
+							break;
+					}
+			}
+		});
+			
+		rootTable.add(switchButton).right().expandX().width(200).height(100);
 		
 		sb = new StringBuilder();
 	}
@@ -75,7 +102,8 @@ public class MyGdxGame implements ApplicationListener
 	
 	private void updatePerformance()
 	{
-		int totalRenderCalls = guistage.getSpriteBatch().renderCalls + gamelogic.getStage().getSpriteBatch().renderCalls;
+		//int totalRenderCalls = guistage.getSpriteBatch().renderCalls + gamelogic.getStage().getSpriteBatch().renderCalls;
+		int totalRenderCalls = -1;
 		
 		sb.length = 0;
 		sb.append("FPS: ")
@@ -96,8 +124,8 @@ public class MyGdxGame implements ApplicationListener
 	@Override
 	public void resize(int width, int height) 
 	{
-		gamelogic.getStage().setViewport(width, height);
 		guistage.setViewport(width, height);
+		gamelogic.resize(width, height);
 	}
 
 	@Override

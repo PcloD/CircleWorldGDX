@@ -1,7 +1,7 @@
 package com.fdangelo.circleworld.universeview.tilemap;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -55,7 +55,7 @@ public class TilemapCircleView extends Actor implements ITilemapCircleListener
     private void UpdateMesh()
     {
         for (int i = 0; i < renderers.length; i++)
-            renderers[i].UpdateMesh();
+    		renderers[i].UpdateMesh();
     }
 
     private void InitRenderers()
@@ -140,7 +140,7 @@ public class TilemapCircleView extends Actor implements ITilemapCircleListener
     static private Matrix4 tmpMatrix4 = new Matrix4();
     
     @Override
-	public void draw(SpriteBatch batch, float parentAlpha) 
+	public void draw(Batch batch, float parentAlpha) 
     {
     	batch.end();
     	

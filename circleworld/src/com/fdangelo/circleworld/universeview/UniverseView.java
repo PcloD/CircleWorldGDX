@@ -2,9 +2,12 @@ package com.fdangelo.circleworld.universeview;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Disposable;
 import com.fdangelo.circleworld.universeengine.IUniverseListener;
 import com.fdangelo.circleworld.universeengine.Thing;
 import com.fdangelo.circleworld.universeengine.ThingPosition;
@@ -23,8 +26,13 @@ import com.fdangelo.circleworld.universeview.objects.ShipView;
 import com.fdangelo.circleworld.universeview.objects.UniverseObjectView;
 import com.fdangelo.circleworld.universeview.tilemap.PlanetView;
 
-public class UniverseView extends Actor implements IUniverseListener
+public class UniverseView extends Actor implements IUniverseListener, Disposable
 {
+    static private final int LAYER_COUNT = 3;
+    static private final int LAYER_BACKGROUND = 0;
+    static private final int LAYER_PLANETS = 1;
+    static private final int LAYER_FOREGROUND = 2;
+    
     private UniverseViewFactory universeFactory = new UniverseViewFactory();
     
     static public final int MaxActivePlanetViews = 5;
@@ -39,20 +47,37 @@ public class UniverseView extends Actor implements IUniverseListener
     private ArrayList<PlanetView> activePlanetViews = new ArrayList<PlanetView>(32);
     private ArrayList<UniverseObjectView> tilemapObjectViews = new ArrayList<UniverseObjectView>(32);
     
-    private Stage stage;
+    private OrthographicCamera camera;
     
     private PlanetType[] planetTypes;
+    
+    private Stage[] layers;
     
     public Universe getUniverse()
     {
         return universe;
     }
-        
-    public UniverseView(Stage stage)
+    
+    public OrthographicCamera getCamera()
     {
-        this.stage = stage;
+    	return camera;
+    }
+        
+    public UniverseView()
+    {
+    	camera = new OrthographicCamera();
+    	
+		layers = new Stage[LAYER_COUNT];
+		for (int i = 0; i < layers.length; i++)
+		{
+			layers[i] = new Stage();
+			layers[i].setCamera(camera);
+			layers[i].setViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		}
         
         planetTypes = PlanetTypes.GetPlanetTypes();
+        
+        layers[LAYER_BACKGROUND].addActor(this);
     }
     
     public void Init(int seed)
@@ -104,7 +129,7 @@ public class UniverseView extends Actor implements IUniverseListener
         
         activePlanetViews.add(planetView);
         
-        stage.addActor(planetView);
+        layers[LAYER_PLANETS].addActor(planetView);
         
         planetViews[thingIndex] = planetView;
         
@@ -144,7 +169,7 @@ public class UniverseView extends Actor implements IUniverseListener
             
             tilemapObjectViews.add(avatarView);
             
-            stage.addActor(avatarView);
+            layers[LAYER_FOREGROUND].addActor(avatarView);
         }
         else if (universeObject instanceof Ship)
         {
@@ -153,7 +178,7 @@ public class UniverseView extends Actor implements IUniverseListener
             
             tilemapObjectViews.add(shipView);
             
-            stage.addActor(shipView);
+            layers[LAYER_FOREGROUND].addActor(shipView);
         }
     }
  
@@ -173,7 +198,7 @@ public class UniverseView extends Actor implements IUniverseListener
     }
     
     @Override
-    public void draw (SpriteBatch batch, float parentAlpha)
+    public void draw (Batch batch, float parentAlpha)
     {
         Thing[] things = universe.getThings();
         ThingPosition[] thingsPositions = universe.getThingsPositions();
@@ -340,6 +365,27 @@ public class UniverseView extends Actor implements IUniverseListener
         frameCount++;
         */
     }
+
+	public void updateStages(float deltaTime) {
+		
+		for (int i = 0; i < layers.length; i++)
+			layers[i].act(deltaTime);
+    	
+		for (int i = 0; i < layers.length; i++)
+			layers[i].draw();
+    }
+
+	public void dispose() {
+		
+		for (int i = 0; i < layers.length; i++)
+			layers[i].dispose();
+	}
+
+	public void resize(int width, int height) {
+		
+		for (int i = 0; i < layers.length; i++)
+			layers[i].setViewport(width, height);
+	}
 }
 
 

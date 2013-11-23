@@ -128,6 +128,9 @@ public class AvatarViewInput
         		avatarInput.walkDirection = 0;
 
             avatarInput.jump = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+            
+            //if (Gdx.input.isKeyPressed(Input.Keys.T))
+            //	GameLogic.Instace.PlayerBoardShip();
         }
     }
 

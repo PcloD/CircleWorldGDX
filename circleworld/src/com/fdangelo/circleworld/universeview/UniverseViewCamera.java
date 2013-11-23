@@ -1,15 +1,14 @@
 package com.fdangelo.circleworld.universeview;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.fdangelo.circleworld.GameLogic;
 import com.fdangelo.circleworld.GameLogicState;
 import com.fdangelo.circleworld.universeview.objects.AvatarInputMode;
@@ -34,6 +33,7 @@ public class UniverseViewCamera
     private float zoomSpeed = 10;
     private float scale = 1.0f;
     private OrthographicCamera cam;
+    private float camRotation;
     private boolean moving;
 
     private float movingFromInputPositionX;
@@ -64,6 +64,7 @@ public class UniverseViewCamera
     
     private float followObjectSmoothTime;
     
+    
     static private Vector3 tmpv3 = new Vector3();
     
     public Actor getFollowingObject()
@@ -76,13 +77,11 @@ public class UniverseViewCamera
     	return cam;
     }
     
-    public UniverseViewCamera(Stage stage)
+    public UniverseViewCamera(OrthographicCamera camera)
     {
         Instance = this;
         
-        cam = (OrthographicCamera) stage.getCamera();
-        
-        //trans.position = new Vector3(0, 0, CAMERA_Z);
+        cam = camera;
     }
     
     public void Update(float deltaTime)
@@ -146,13 +145,12 @@ public class UniverseViewCamera
                 newPositionY = followingObject.getY() + followingObjectPositionDelta.y;
             }
             
-            //TODO: Implemented camera rotation on libgdx
-            //float newRotation;
+            float newRotation;
             
-            //if (followRotation)
-            //    newRotation = followingObject.getRotation();
-            //else
-            //    newRotation = 0;
+            if (followRotation)
+                newRotation = followingObject.getRotation();
+            else
+                newRotation = 0;
             
             float newScale;
             
@@ -161,11 +159,19 @@ public class UniverseViewCamera
             else
                 newScale = 1.0f;
             
+            //Update camera position
             cam.position.x = newPositionX;
             cam.position.y = newPositionY;
             
-            //trans.rotation = newRotation * followingObjectRotationDelta;
+            //Update camera rotation
+            camRotation = newRotation + followingObjectRotationDelta;
+            while(camRotation > 360.0f)
+            	camRotation -= 360.0f;
+            while(camRotation < 0)
+            	camRotation += 360.0f;
+            cam.up.set(0, 1, 0).rotate(camRotation, 0, 0, -1);
             
+            //Update camera scale
             scale = newScale + followingObjectScaleDelta;
         }
     }
@@ -508,10 +514,10 @@ public class UniverseViewCamera
                     cameraDistance = cameraDistance * (scale / 1.0f);
                 }
                 
-                //if (followRotation)
-                //    followingObjectRotationDelta = trans.rotation * Quaternion.Inverse(toFollow.rotation);
-                //else
-                //    followingObjectRotationDelta = trans.rotation * Quaternion.Inverse(Quaternion.identity);
+                if (followRotation)
+                    followingObjectRotationDelta = camRotation - toFollow.getRotation();
+                else
+                    followingObjectRotationDelta = camRotation - 0;
             }
             
             followingObject = toFollow; 
