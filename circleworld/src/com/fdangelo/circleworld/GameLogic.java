@@ -12,7 +12,8 @@ import com.fdangelo.circleworld.universeview.tilemap.PlanetView;
 import com.fdangelo.circleworld.utils.Mathf;
 
 public class GameLogic implements Disposable {
-	static public GameLogic instace;
+	
+	private static GameLogic instace;
 
 	public AssetManager assetManager;
 
@@ -25,6 +26,10 @@ public class GameLogic implements Disposable {
 	private float stateTime;
 
 	private float universeTimeMultiplier = 1.0f;
+
+	public static GameLogic getInstace() {
+		return instace;
+	}
 
 	public UniverseView getUniverseView() {
 		return universeView;
@@ -58,11 +63,11 @@ public class GameLogic implements Disposable {
 				break;
 
 			case PlayingAvatar:
-				universeCamera.followObject(getUniverseView().avatarView, FollowCameraParameters.FollowRotation | FollowCameraParameters.FollowScale, true);
+				universeCamera.followObject(getUniverseView().getAvatarView(), FollowCameraParameters.FollowRotation | FollowCameraParameters.FollowScale, true);
 				break;
 
 			case PlayingShip:
-				universeCamera.followObject(getUniverseView().shipView, FollowCameraParameters.None, true);
+				universeCamera.followObject(getUniverseView().getShipView(), FollowCameraParameters.None, true);
 				break;
 
 			case Travelling:
@@ -121,7 +126,7 @@ public class GameLogic implements Disposable {
 	}
 
 	public void travelToPlanet(final PlanetView targetPlanetView) {
-		((Avatar) getUniverseView().avatarView.getUniverseObject()).travelToPlanet((Planet) targetPlanetView.getTilemapCircle());
+		((Avatar) getUniverseView().getAvatarView().getUniverseObject()).travelToPlanet((Planet) targetPlanetView.getTilemapCircle());
 
 		// Force update to update AvatarView position
 		getUniverseView().updateUniverse(0);

@@ -23,7 +23,7 @@ public class Ship extends UniverseObject {
 
 	@Override
 	protected void onUpdate(final float deltaTime) {
-		if (GameLogic.instace.getState() == GameLogicState.PlayingShip) {
+		if (GameLogic.getInstace().getState() == GameLogicState.PlayingShip) {
 			if (input.rotateDirection != 0) {
 				rotationVelocity += input.rotateDirection * rotationAcceleration * deltaTime;
 			} else {
@@ -44,7 +44,7 @@ public class Ship extends UniverseObject {
 
 			velocityX = Mathf.sin(getRotation()) * currentSpeed;
 			velocityY = Mathf.cos(getRotation()) * currentSpeed;
-		} else if (GameLogic.instace.getState() == GameLogicState.PlayingAvatar) {
+		} else if (GameLogic.getInstace().getState() == GameLogicState.PlayingAvatar) {
 			// Orbit planet!
 			if (parent != null) {
 				final float orbitDistance = parent.getDistanceFromTileY(parent.getHeight() + 7);

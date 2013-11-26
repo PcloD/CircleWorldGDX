@@ -23,7 +23,7 @@ public class TileTypes {
 	static private TextureAtlas atlas;
 
 	static public void initTileTypes() {
-		final AssetManager assetManager = GameLogic.instace.assetManager;
+		final AssetManager assetManager = GameLogic.getInstace().assetManager;
 
 		atlas = assetManager.get("atlas/tilemap.atlas", TextureAtlas.class);
 

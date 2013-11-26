@@ -31,25 +31,21 @@ public final class UniverseView extends Actor implements IUniverseListener, Disp
 	static private final int LAYER_BACKGROUND = 0;
 	static private final int LAYER_PLANETS = 1;
 	static private final int LAYER_FOREGROUND = 2;
-
+	
+	static public final int MAX_ACTIVE_PLANET_VIEWS = 5;
+	
 	private final UniverseViewFactory universeFactory = new UniverseViewFactory();
-
-	static public final int MaxActivePlanetViews = 5;
-
-	public AvatarView avatarView;
-
-	public ShipView shipView;
-
-	private Universe universe = new Universe();
 
 	private final PlanetView[] planetViews = new PlanetView[Universe.MAX_THINGS];
 	private final ArrayList<PlanetView> activePlanetViews = new ArrayList<PlanetView>(32);
 	private final ArrayList<UniverseObjectView> tilemapObjectViews = new ArrayList<UniverseObjectView>(32);
+	
+	private AvatarView avatarView;
+	private ShipView shipView;
+	private Universe universe;
 
 	private final OrthographicCamera camera;
-
 	private final PlanetType[] planetTypes;
-
 	private final Stage[] layers;
 
 	public final Universe getUniverse() {
@@ -58,6 +54,14 @@ public final class UniverseView extends Actor implements IUniverseListener, Disp
 
 	public final OrthographicCamera getCamera() {
 		return camera;
+	}
+
+	public final AvatarView getAvatarView() {
+		return avatarView;
+	}
+
+	public final ShipView getShipView() {
+		return shipView;
 	}
 
 	public UniverseView() {
@@ -108,7 +112,7 @@ public final class UniverseView extends Actor implements IUniverseListener, Disp
 			return planetViews[thingIndex];
 		}
 
-		if (activePlanetViews.size() >= MaxActivePlanetViews) {
+		if (activePlanetViews.size() >= MAX_ACTIVE_PLANET_VIEWS) {
 			universe.returnPlanet(activePlanetViews.get(0).getPlanet());
 		}
 

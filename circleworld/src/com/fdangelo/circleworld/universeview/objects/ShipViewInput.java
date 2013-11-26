@@ -22,14 +22,14 @@ public class ShipViewInput {
 	}
 
 	public final void Update(final float deltaTime) {
-		if (GameLogic.instace.getState() != GameLogicState.PlayingShip) {
+		if (GameLogic.getInstace().getState() != GameLogicState.PlayingShip) {
 			return;
 		}
 
 		switch (mode) {
 			case Move:
 				updateMove();
-				UniverseViewCamera.instance.updateZoomInput(deltaTime);
+				UniverseViewCamera.getInstance().updateZoomInput(deltaTime);
 				break;
 		}
 	}

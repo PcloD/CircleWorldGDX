@@ -39,7 +39,7 @@ public class TilemapCircleView extends Actor implements ITilemapCircleListener {
 		tilemapCircle.setListener(this);
 
 		// Use the first texture in the atlas as the tileset texture
-		final TextureAtlas atlas = GameLogic.instace.assetManager.get("atlas/tilemap.atlas", TextureAtlas.class);
+		final TextureAtlas atlas = GameLogic.getInstace().assetManager.get("atlas/tilemap.atlas", TextureAtlas.class);
 		tilesetTexture = atlas.getTextures().iterator().next();
 
 		updatePosition();

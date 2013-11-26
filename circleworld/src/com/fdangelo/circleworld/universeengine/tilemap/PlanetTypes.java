@@ -21,7 +21,7 @@ public class PlanetTypes {
 	}
 
 	static public void initPlanetTypes() {
-		final AssetManager assetManager = GameLogic.instace.assetManager;
+		final AssetManager assetManager = GameLogic.getInstace().assetManager;
 
 		final TextureAtlas atlas = assetManager.get("atlas/planets.atlas", TextureAtlas.class);
 		planetTypes = new PlanetType[256];

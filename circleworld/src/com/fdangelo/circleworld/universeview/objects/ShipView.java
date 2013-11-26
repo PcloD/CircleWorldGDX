@@ -14,7 +14,7 @@ public class ShipView extends UniverseObjectView {
 
 	public ShipView() {
 		input = new ShipViewInput(this);
-		sprite = GameLogic.instace.assetManager.get("atlas/ships.atlas", TextureAtlas.class).findRegion("Battleship");
+		sprite = GameLogic.getInstace().assetManager.get("atlas/ships.atlas", TextureAtlas.class).findRegion("Battleship");
 	}
 
 	@Override
@@ -45,11 +45,11 @@ public class ShipView extends UniverseObjectView {
 	public void onUniverseObjectUpdated(final float deltaTime) {
 		super.onUniverseObjectUpdated(deltaTime);
 
-		if (GameLogic.instace.getState() == GameLogicState.PlayingShip) {
+		if (GameLogic.getInstace().getState() == GameLogicState.PlayingShip) {
 			closeThings = universeView.getUniverse().findClosestRenderedThings(universeObject.getPositionX(), universeObject.getPositionY(), 100.0f,
 					closeThings);
 
-			for (int i = 0; i < closeThings.size && i < UniverseView.MaxActivePlanetViews; i++) {
+			for (int i = 0; i < closeThings.size && i < UniverseView.MAX_ACTIVE_PLANET_VIEWS; i++) {
 				universeView.getPlanetView(closeThings.get(i));
 			}
 		}

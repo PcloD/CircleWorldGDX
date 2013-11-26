@@ -1,6 +1,5 @@
 package com.fdangelo.circleworld.gui.core;
 
-import com.badlogic.gdx.Gdx;
 
 public class Gui {
 	static private Screen activeScreen;
@@ -8,9 +7,7 @@ public class Gui {
 	static public void setActiveScreen(final Screen screen) {
 		activeScreen = screen;
 
-		activeScreen.getStage().setViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-		Gdx.input.setInputProcessor(screen.getStage());
+		activeScreen.setActive();
 	}
 
 	static public Screen getActiveScreen() {
@@ -31,7 +28,7 @@ public class Gui {
 
 	public static void resize(final int width, final int height) {
 		if (activeScreen != null) {
-			activeScreen.getStage().setViewport(width, height);
+			activeScreen.resize(width, height);
 		}
 	}
 }

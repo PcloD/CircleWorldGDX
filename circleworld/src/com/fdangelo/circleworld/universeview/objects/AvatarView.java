@@ -11,7 +11,7 @@ public class AvatarView extends UniverseObjectView {
 
 	public AvatarView() {
 		input = new AvatarViewInput(this);
-		sprite = GameLogic.instace.assetManager.get("atlas/player1.atlas", TextureAtlas.class).findRegion("p1_stand");
+		sprite = GameLogic.getInstace().assetManager.get("atlas/player1.atlas", TextureAtlas.class).findRegion("p1_stand");
 	}
 
 	@Override

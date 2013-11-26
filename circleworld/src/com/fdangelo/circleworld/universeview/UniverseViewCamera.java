@@ -20,7 +20,7 @@ import com.fdangelo.circleworld.universeview.tilemap.PlanetView;
 import com.fdangelo.circleworld.utils.Mathf;
 
 public final class UniverseViewCamera {
-	static public UniverseViewCamera instance;
+	private static UniverseViewCamera instance;
 
 	private static final float SMOOTH_TIME = 0.5f;
 	private static final float ZOOM_SMOOTH_TIME = 0.15f;
@@ -65,6 +65,10 @@ public final class UniverseViewCamera {
 
 	static private Vector3 tmpv3 = new Vector3();
 
+	public static UniverseViewCamera getInstance() {
+		return instance;
+	}
+
 	public final Actor getFollowingObject() {
 		return followingObject;
 	}
@@ -80,7 +84,7 @@ public final class UniverseViewCamera {
 	}
 
 	public final void update(final float deltaTime) {
-		switch (GameLogic.instace.getState()) {
+		switch (GameLogic.getInstace().getState()) {
 			case PlayingAvatar:
 			case PlayingShip:
 				updatePosition(deltaTime);
@@ -103,8 +107,9 @@ public final class UniverseViewCamera {
 		followObjectSmoothTime = 0;
 
 		if (followingObject != null) {
-			if (GameLogic.instace.getState() == GameLogicState.PlayingAvatar && AvatarViewInput.mode == AvatarInputMode.Move
-					|| GameLogic.instace.getState() == GameLogicState.PlayingShip && ShipViewInput.mode == ShipInputMode.Move) {
+			if (GameLogic.getInstace().getState() == GameLogicState.PlayingAvatar && AvatarViewInput.mode == AvatarInputMode.Move
+					|| GameLogic.getInstace().getState() == GameLogicState.PlayingShip && ShipViewInput.mode == ShipInputMode.Move) {
+				
 				followingObjectPositionDelta.set(Mathf.lerp(followingObjectPositionDelta, Vector2.Zero, deltaTime * (1.0f / SMOOTH_TIME)));
 				followingObjectScaleDelta = Mathf.lerp(followingObjectScaleDelta, 0, deltaTime * (1.0f / SMOOTH_TIME));
 				followingObjectRotationDelta = Mathf.lerp(followingObjectRotationDelta, 0, deltaTime * (1.0f / SMOOTH_TIME));
@@ -113,7 +118,7 @@ public final class UniverseViewCamera {
 
 			float newPositionX, newPositionY;
 
-			if (GameLogic.instace.getState() == GameLogicState.PlayingAvatar && AvatarViewInput.mode == AvatarInputMode.Edit) {
+			if (GameLogic.getInstace().getState() == GameLogicState.PlayingAvatar) {
 				// newPosition = followingObject.position + trans.up *
 				// followingObjectPositionDelta.y + trans.right *
 				// followingObjectPositionDelta.x;
@@ -123,13 +128,13 @@ public final class UniverseViewCamera {
 
 				tmpv3.set(cam.up).scl(followingObjectPositionDelta.y);
 				newPositionX += tmpv3.x;
-				newPositionX += tmpv3.y;
+				newPositionY += tmpv3.y;
 
 				// Calculate "right" direction by making the cross product
 				// between the camera's foward and up vectors
 				tmpv3.set(cam.up).crs(cam.direction).scl(followingObjectPositionDelta.x);
 				newPositionX += tmpv3.x;
-				newPositionX += tmpv3.y;
+				newPositionY += tmpv3.y;
 			} else {
 				newPositionX = followingObject.getX() + followingObjectPositionDelta.x;
 				newPositionY = followingObject.getY() + followingObjectPositionDelta.y;
@@ -300,9 +305,10 @@ public final class UniverseViewCamera {
 			if (touchCount == 1) {
 				if (!moving) {
 					moving = true;
-
 					movingFromInputPositionX = touch1x;
 					movingFromInputPositionY = touch1y;
+					movingToInputPositionX = movingFromInputPositionX;
+					movingToInputPositionY = movingFromInputPositionY;
 				} else {
 					movingToInputPositionX = touch1x;
 					movingToInputPositionY = touch1y;
@@ -317,10 +323,11 @@ public final class UniverseViewCamera {
 					moving = true;
 					movingFromInputPositionX = Gdx.input.getX();
 					movingFromInputPositionY = Gdx.input.getY();
+					movingToInputPositionX = movingFromInputPositionX;
+					movingToInputPositionY = movingFromInputPositionY;
 				} else {
 					movingToInputPositionX = Gdx.input.getX();
 					movingToInputPositionY = Gdx.input.getY();
-
 				}
 			} else {
 				moving = false;
@@ -329,6 +336,7 @@ public final class UniverseViewCamera {
 
 		if (moving) {
 			if (movingFromInputPositionX != movingToInputPositionX || movingFromInputPositionY != movingToInputPositionY) {
+				
 				cam.unproject(tmpv3.set(movingFromInputPositionX, movingFromInputPositionY, 0));
 				final float movingFromWorldPositionX = tmpv3.x;
 				final float movingFromWorldPositionY = tmpv3.y;
@@ -348,7 +356,8 @@ public final class UniverseViewCamera {
 					final float deltaX = Vector3.dot(dx, dy, 0, tmpv3.x, tmpv3.y, tmpv3.z);
 					final float deltaY = Vector3.dot(dx, dy, 0, cam.up.x, cam.up.y, cam.up.z);
 
-					followingObjectPositionDelta.set(-deltaX, -deltaY);
+					followingObjectPositionDelta.x -= deltaX;
+					followingObjectPositionDelta.y -= deltaY;
 
 					float newPositionX, newPositionY;
 					// Vector3 newPosition = followingObject.position + trans.up
@@ -361,13 +370,13 @@ public final class UniverseViewCamera {
 
 					tmpv3.set(cam.up).scl(followingObjectPositionDelta.y);
 					newPositionX += tmpv3.x;
-					newPositionX += tmpv3.y;
+					newPositionY += tmpv3.y;
 
 					// Calculate "right" direction by making the cross product
 					// between the camera's foward and up vectors
 					tmpv3.set(cam.up).crs(cam.direction).scl(followingObjectPositionDelta.x);
 					newPositionX += tmpv3.x;
-					newPositionX += tmpv3.y;
+					newPositionY += tmpv3.y;
 
 					cam.position.x = newPositionX;
 					cam.position.y = newPositionY;
@@ -441,8 +450,8 @@ public final class UniverseViewCamera {
 
 			if (clickedThingIndex >= 0) {
 				final PlanetView targetPlanetView = universeView.getPlanetView((short) clickedThingIndex);
-				if (universeView.avatarView.getUniverseObject().getParent() != targetPlanetView.getTilemapCircle()) {
-					GameLogic.instace.travelToPlanet(targetPlanetView);
+				if (universeView.getAvatarView().getUniverseObject().getParent() != targetPlanetView.getTilemapCircle()) {
+					GameLogic.getInstace().travelToPlanet(targetPlanetView);
 				}
 			}
 		}
