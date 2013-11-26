@@ -2,99 +2,99 @@ package com.fdangelo.circleworld.universeengine;
 
 import com.fdangelo.circleworld.universeengine.tilemap.Planet;
 
-public class UniverseGeneratorDefault extends UniverseGenerator
-{
+public class UniverseGeneratorDefault extends UniverseGenerator {
+
 	@Override
-    protected void AddGalaxy()
-    {
-        int galaxyOrbits = random.nextInt(10) + 10;
+	protected void addGalaxy() {
+		final int galaxyOrbits = random.nextInt(10) + 10;
 
-        short galaxySafeRadius = (short) (things[currentThing].safeRadius / 2);
-        short solarSystemRadius = (short) (galaxySafeRadius / (galaxyOrbits * 2));
+		final short galaxySafeRadius = (short) (things[currentThing].safeRadius / 2);
+		final short solarSystemRadius = (short) (galaxySafeRadius / (galaxyOrbits * 2));
 
-        for (int i = 0; i < galaxyOrbits; i++)
-        {
-            short solarSystemDistance = (short) ((galaxySafeRadius * i) / galaxyOrbits);
-            
-            int minSolarSystems = (Math.max(i * 5, 1) + 1) / 2;
-            int maxSolarSystems = Math.max(i * 5, 1) + 1;
+		for (int i = 0; i < galaxyOrbits; i++) {
+			final short solarSystemDistance = (short) ((galaxySafeRadius * i) / galaxyOrbits);
 
-            int solarSystems = random.nextInt(maxSolarSystems - minSolarSystems) + minSolarSystems;
+			final int minSolarSystems = (Math.max(i * 5, 1) + 1) / 2;
+			final int maxSolarSystems = Math.max(i * 5, 1) + 1;
 
-            short solarSystemOrbitalPeriod = (short) (random.nextInt(120) + 120);
-            if (random.nextInt(2) == 0)
-                solarSystemOrbitalPeriod = (short) -solarSystemOrbitalPeriod;
+			final int solarSystems = random.nextInt(maxSolarSystems - minSolarSystems) + minSolarSystems;
 
-            for (int j = 0; j < solarSystems; j++)
-            {
-                short solarSystemAngle = (short) ((36000 * j) / solarSystems);
+			short solarSystemOrbitalPeriod = (short) (random.nextInt(120) + 120);
+			if (random.nextInt(2) == 0) {
+				solarSystemOrbitalPeriod = (short) -solarSystemOrbitalPeriod;
+			}
 
-                PushThing(ThingType.SolarSystem, solarSystemAngle, solarSystemDistance, (short) 0, solarSystemOrbitalPeriod, (short) 0, solarSystemRadius, 0);
-                {
-                    int suns = random.nextInt(3) + 1;
+			for (int j = 0; j < solarSystems; j++) {
+				final short solarSystemAngle = (short) ((36000 * j) / solarSystems);
 
-                    short solarSystemSafeRadius = things[currentThing].safeRadius;
+				pushThing(ThingType.SolarSystem, solarSystemAngle, solarSystemDistance, (short) 0, solarSystemOrbitalPeriod, (short) 0, solarSystemRadius, 0);
+				{
+					final int suns = random.nextInt(3) + 1;
 
-                    short minRadius = (short) ((solarSystemRadius / 8) / 2);
-                    short maxRadius = (short) (solarSystemRadius / 8); 
-                    
-                    short sunRadius = (short) (random.nextInt(maxRadius - minRadius) + minRadius);
+					final short solarSystemSafeRadius = things[currentThing].safeRadius;
 
-                    if (suns == 1)
-                    {
-                        PushThing(ThingType.Sun, (short) 0, (short) 0, (short) 0, (short) 0, Planet.GetClosestValidRadius(sunRadius), (short) 0, random.nextInt());
-                        PopThing();
-                    }
-                    else
-                    {
-                        short sunDistance = (short) (sunRadius * 4 / 3);
-                        short sunOrbitalPerdiod = (short) (random.nextInt(30) + 30);
-                        if (random.nextInt(2) == 0)
-                            sunOrbitalPerdiod = (short) -sunOrbitalPerdiod;
+					final short minRadius = (short) ((solarSystemRadius / 8) / 2);
+					final short maxRadius = (short) (solarSystemRadius / 8);
 
-                        for (int k = 0; k < suns; k++)
-                        {
-                            short sunAngle = (short) ((36000 * k) / suns);
+					final short sunRadius = (short) (random.nextInt(maxRadius - minRadius) + minRadius);
 
-                            PushThing(ThingType.Sun, sunAngle, sunDistance, (short) 0, sunOrbitalPerdiod, Planet.GetClosestValidRadius(sunRadius), (short) 0, random.nextInt());
-                            PopThing();
-                        }
-                    }
+					if (suns == 1) {
+						pushThing(ThingType.Sun, (short) 0, (short) 0, (short) 0, (short) 0, Planet.getClosestValidRadius(sunRadius), (short) 0,
+								random.nextInt());
+						popThing();
+					} else {
+						final short sunDistance = (short) (sunRadius * 4 / 3);
+						short sunOrbitalPerdiod = (short) (random.nextInt(30) + 30);
+						if (random.nextInt(2) == 0) {
+							sunOrbitalPerdiod = (short) -sunOrbitalPerdiod;
+						}
 
-                    int planetsOrbits = random.nextInt(7) + 1;
+						for (int k = 0; k < suns; k++) {
+							final short sunAngle = (short) ((36000 * k) / suns);
 
-                    short planetSafeRadius = (short) ((solarSystemSafeRadius - sunRadius * 6) / (planetsOrbits * 2));
+							pushThing(ThingType.Sun, sunAngle, sunDistance, (short) 0, sunOrbitalPerdiod, Planet.getClosestValidRadius(sunRadius), (short) 0,
+									random.nextInt());
+							popThing();
+						}
+					}
 
-                    for (int l = 0; l < planetsOrbits; l++)
-                    {
-                        short planetDistance = (short) (sunRadius * 6 + ((solarSystemSafeRadius - sunRadius * 6) * l) / planetsOrbits);
+					final int planetsOrbits = random.nextInt(7) + 1;
 
-                        short planetAngle = (short) random.nextInt(36000);
+					final short planetSafeRadius = (short) ((solarSystemSafeRadius - sunRadius * 6) / (planetsOrbits * 2));
 
-                        short planetRotationPeriod = (short) (random.nextInt(30) + 30);
-                        if (random.nextInt(2) == 0)
-                            planetRotationPeriod = (short) -planetRotationPeriod;
+					for (int l = 0; l < planetsOrbits; l++) {
+						final short planetDistance = (short) (sunRadius * 6 + ((solarSystemSafeRadius - sunRadius * 6) * l) / planetsOrbits);
 
-                        short planetOrbitationPeriod = (short) (random.nextInt(30) + 30);
-                        if (random.nextInt(2) == 0)
-                            planetOrbitationPeriod = (short) -planetOrbitationPeriod;
-                        
-                        short minPlanetRadius = (short) (planetSafeRadius / 16);
-                        short maxPlanetRadius = (short) (planetSafeRadius / 9);
+						final short planetAngle = (short) random.nextInt(36000);
 
-                        short planetRadius;
-                        if (maxPlanetRadius - minPlanetRadius > 0)
-                        	planetRadius = (short) (random.nextInt(maxPlanetRadius - minPlanetRadius) + minPlanetRadius);
-                        else
-                        	planetRadius = minPlanetRadius;
+						short planetRotationPeriod = (short) (random.nextInt(30) + 30);
+						if (random.nextInt(2) == 0) {
+							planetRotationPeriod = (short) -planetRotationPeriod;
+						}
 
-                        PushThing(ThingType.Planet, planetAngle, planetDistance, planetRotationPeriod, planetOrbitationPeriod, Planet.GetClosestValidRadius(planetRadius), planetSafeRadius, random.nextInt());
-                        PopThing();
-                    }
+						short planetOrbitationPeriod = (short) (random.nextInt(30) + 30);
+						if (random.nextInt(2) == 0) {
+							planetOrbitationPeriod = (short) -planetOrbitationPeriod;
+						}
 
-                }
-                PopThing();
-            }
-        }
-    }
+						final short minPlanetRadius = (short) (planetSafeRadius / 16);
+						final short maxPlanetRadius = (short) (planetSafeRadius / 9);
+
+						short planetRadius;
+						if (maxPlanetRadius - minPlanetRadius > 0) {
+							planetRadius = (short) (random.nextInt(maxPlanetRadius - minPlanetRadius) + minPlanetRadius);
+						} else {
+							planetRadius = minPlanetRadius;
+						}
+
+						pushThing(ThingType.Planet, planetAngle, planetDistance, planetRotationPeriod, planetOrbitationPeriod,
+								Planet.getClosestValidRadius(planetRadius), planetSafeRadius, random.nextInt());
+						popThing();
+					}
+
+				}
+				popThing();
+			}
+		}
+	}
 }

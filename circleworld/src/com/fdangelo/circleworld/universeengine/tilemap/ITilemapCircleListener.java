@@ -1,8 +1,7 @@
 package com.fdangelo.circleworld.universeengine.tilemap;
 
-public interface ITilemapCircleListener
-{
-    void OnTilemapTileChanged(int tileX, int tileY);
-    
-    void OnTilemapParentChanged(float deltaTime);
+public interface ITilemapCircleListener {
+	void onTilemapTileChanged(int tileX, int tileY);
+
+	void onTilemapParentChanged(float deltaTime);
 }

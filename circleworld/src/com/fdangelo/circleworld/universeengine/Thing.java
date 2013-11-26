@@ -1,26 +1,44 @@
 package com.fdangelo.circleworld.universeengine;
 
-public class Thing
-{
-    public short type; //type of thing (use ThingType!)
-    public short childs; //number of childs
+public class Thing {
+	// type of thing (use ThingType!)
+	public short type;
 
-    public short parent; //Index of parent
-    public short nextBrother; //Index of next Thing with same parent
+	// number of child
+	public short childs;
 
-    public short angle; //Rotation relative to parent (centidegrees (100 -> 1 degree, 36000 -> 360 degrees)
-    public short distance; //Distance relative to parent
+	// Index of parent
+	public short parent;
 
-    public short rotationPeriod; //seconds to complete a full rotation around itself (negative -> rotation counterclockwise)
-    public short orbitalPeriod; //seconds to complete a full rotation around the parent (negative -> rotation counterclockwise)
+	// Index of next Thing with same parent
+	public short nextBrother;
 
-    public short radius; //Radius
-    public short safeRadius; //Radius at which things can orbit this thing without colliding with any brother
+	// Rotation relative to parent (centidegrees (100 -> 1 degree, 36000 -> 360
+	// degrees)
+	public short angle;
 
-    public int seed; //Seed used to create the thing
+	// Distance relative to parent
+	public short distance;
 
-    //Cache
-    public float orbitalPeriodInv;
-    public float rotationPeriodInv;
+	// seconds to complete a full rotation around itself (negative -> rotation
+	// counterclockwise)
+	public short rotationPeriod;
+
+	// seconds to complete a full rotation around the parent (negative ->
+	// rotation counterclockwise)
+	public short orbitalPeriod;
+
+	// Radius
+	public short radius;
+
+	// Radius at which things can orbit this thing without colliding with any
+	// brother
+	public short safeRadius;
+
+	// Seed used to create the thing
+	public int seed;
+
+	// Cache
+	public float orbitalPeriodInv;
+	public float rotationPeriodInv;
 }
-

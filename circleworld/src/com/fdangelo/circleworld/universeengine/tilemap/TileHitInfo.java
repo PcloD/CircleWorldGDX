@@ -1,24 +1,22 @@
 package com.fdangelo.circleworld.universeengine.tilemap;
 
-public class TileHitInfo
-{
-    public int hitTileX;
-    public int hitTileY;
+public class TileHitInfo {
+	public int hitTileX;
+	public int hitTileY;
 
-    public float hitDistance;
-    public float hitNormalX;
-    public float hitNormalY;
-    public float hitPositionX;
-    public float hitPositionY;
-    
-    public void set(TileHitInfo other)
-    {
-    	this.hitTileX = other.hitTileX;
-    	this.hitTileY = other.hitTileY;
-    	this.hitDistance = other.hitDistance;
-    	this.hitNormalX = other.hitNormalX;
-    	this.hitNormalY = other.hitNormalY;
-    	this.hitPositionX = other.hitPositionX;
-    	this.hitPositionY = other.hitPositionY;
-    }
+	public float hitDistance;
+	public float hitNormalX;
+	public float hitNormalY;
+	public float hitPositionX;
+	public float hitPositionY;
+
+	public final void set(final TileHitInfo other) {
+		hitTileX = other.hitTileX;
+		hitTileY = other.hitTileY;
+		hitDistance = other.hitDistance;
+		hitNormalX = other.hitNormalX;
+		hitNormalY = other.hitNormalY;
+		hitPositionX = other.hitPositionX;
+		hitPositionY = other.hitPositionY;
+	}
 }
