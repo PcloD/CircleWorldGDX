@@ -12,7 +12,6 @@ import com.fdangelo.circleworld.GameLogic;
 import com.fdangelo.circleworld.gui.core.Screen;
 import com.fdangelo.circleworld.universeengine.Universe;
 import com.fdangelo.circleworld.universeengine.objects.UniverseObject;
-import com.fdangelo.circleworld.universeview.objects.AvatarInputEditTool;
 import com.fdangelo.circleworld.universeview.objects.AvatarInputMode;
 import com.fdangelo.circleworld.universeview.objects.AvatarViewInput;
 
